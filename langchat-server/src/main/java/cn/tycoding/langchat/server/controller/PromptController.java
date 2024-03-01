@@ -1,0 +1,62 @@
+package cn.tycoding.langchat.server.controller;
+
+import cn.hutool.core.util.StrUtil;
+import cn.tycoding.langchat.server.entity.LcPrompt;
+import cn.tycoding.langchat.server.service.PromptService;
+import cn.tycoding.langchat.server.utils.MybatisUtil;
+import cn.tycoding.langchat.server.utils.QueryPage;
+import cn.tycoding.langchat.server.utils.R;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
+
+/**
+ * @author tycoding
+ * @since 2024/1/19
+ */
+@RequestMapping("/langchat/prompt")
+@RestController
+@AllArgsConstructor
+public class PromptController {
+
+    private final PromptService promptService;
+
+    @GetMapping("/page")
+    public R list(LcPrompt data, QueryPage queryPage) {
+        LambdaQueryWrapper<LcPrompt> queryWrapper = Wrappers.<LcPrompt>lambdaQuery()
+                .like(!StrUtil.isBlank(data.getName()), LcPrompt::getName, data.getName())
+                .orderByDesc(LcPrompt::getCreateTime);
+        IPage<LcPrompt> iPage = promptService.page(MybatisUtil.wrap(data, queryPage), queryWrapper);
+        iPage.getRecords().forEach(i -> {
+            if (i.getPrompt() != null && i.getPrompt().length() >= 50) {
+                i.setPrompt(StrUtil.sub(i.getPrompt(), 0, 50) + "...");
+            }
+        });
+        return R.ok(MybatisUtil.getData(iPage));
+    }
+
+    @GetMapping("/{id}")
+    public R getById(@PathVariable String id) {
+        return R.ok(promptService.getById(id));
+    }
+
+    @DeleteMapping("/{id}")
+    public R del(@PathVariable String id) {
+        return R.ok(promptService.removeById(id));
+    }
+
+    @PostMapping
+    public R add(@RequestBody LcPrompt data) {
+        data.setCreateTime(new Date());
+        return R.ok(promptService.save(data));
+    }
+
+    @PutMapping
+    public R update(@RequestBody LcPrompt data) {
+        return R.ok(promptService.updateById(data));
+    }
+}
