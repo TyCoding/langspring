@@ -1,7 +1,8 @@
-package cn.tycoding.langchat.server.utils;
+package cn.tycoding.langchat.core.dto;
 
 import cn.tycoding.langchat.core.utils.StreamEmitter;
 import lombok.Data;
+import org.springframework.ai.chat.prompt.Prompt;
 
 /**
  * @author tycoding
@@ -11,11 +12,12 @@ import lombok.Data;
 public class TextR {
 
     private StreamEmitter emitter;
+    private Prompt prompt;
 
     /**
      * 输入内容
      */
-    private String content;
+    private String message;
 
     /**
      * 角色

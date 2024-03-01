@@ -14,10 +14,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class LangChatProps {
 
     /**
-     * 模型密钥
-     */
-    private String apiKey;
-    /**
      * 对话模型
      */
     private ChatModelEnum chatModel;
@@ -33,10 +29,4 @@ public class LangChatProps {
      * Proxy
      */
     private String proxy;
-
-    private EmbedProps embedding;
-
-    private OllamaProps ollama;
-
-    private GeminiProps gemini;
 }

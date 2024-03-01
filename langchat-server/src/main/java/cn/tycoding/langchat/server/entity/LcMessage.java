@@ -45,9 +45,9 @@ public class LcMessage implements Serializable {
     private String role;
 
     /**
-     * 内容
+     * 消息内容
      */
-    private String content;
+    private String message;
 
     /**
      * 创建时间

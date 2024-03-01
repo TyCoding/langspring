@@ -1,25 +1,24 @@
 package cn.tycoding.langchat.server.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
-import cn.tycoding.langchat.common.dto.ChatData;
+import cn.tycoding.langchat.common.constant.RoleEnum;
+import cn.tycoding.langchat.core.dto.*;
+import cn.tycoding.langchat.core.enums.FileEnum;
 import cn.tycoding.langchat.core.service.LangChatService;
-import cn.tycoding.langchat.core.utils.ChatReq;
-import cn.tycoding.langchat.core.utils.FileEnum;
-import cn.tycoding.langchat.core.utils.OssR;
-import cn.tycoding.langchat.common.constant.PromptConst;
-import cn.tycoding.langchat.server.utils.ChatR;
-import cn.tycoding.langchat.server.utils.TextR;
-import cn.tycoding.langchat.server.utils.ImageR;
-import cn.tycoding.langchat.server.component.PromptStore;
+import cn.tycoding.langchat.core.utils.StreamEmitter;
+import cn.tycoding.langchat.server.entity.LcMessage;
 import cn.tycoding.langchat.server.entity.LcOss;
+import cn.tycoding.langchat.server.exception.ServiceException;
 import cn.tycoding.langchat.server.mapper.OssMapper;
 import cn.tycoding.langchat.server.service.ChatService;
-import dev.langchain4j.model.input.Prompt;
-import dev.langchain4j.model.input.PromptTemplate;
+import cn.tycoding.langchat.server.service.MessageService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.ai.chat.ChatResponse;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author tycoding
@@ -31,36 +30,62 @@ import org.springframework.stereotype.Service;
 public class ChatServiceImpl implements ChatService {
 
     private final LangChatService langChatService;
+    private final MessageService messageService;
     private final OssMapper ossMapper;
 
     @Override
-    public void chat(ChatR req) {
-        PromptTemplate promptTemplate = PromptTemplate.from(PromptStore.get(PromptConst.CHAT));
-        Prompt prompt = promptTemplate.apply(BeanUtil.beanToMap(req, false, true));
-        ChatData data = new ChatData();
-        BeanUtils.copyProperties(req, data);
-        langChatService.chat(req.getEmitter(), prompt, data);
+    public void chat(ChatReq req) {
+        Flux<ChatResponse> flux = langChatService.stream(req);
+        handler(flux, req);
+    }
+
+    private void handler(Flux<ChatResponse> flux, ChatReq req) {
+        StreamEmitter emitter = req.getEmitter();
+        long startTime = System.currentTimeMillis();
+        AtomicLong usage = new AtomicLong();
+        StringBuilder text = new StringBuilder();
+        flux.subscribe(
+                res -> {
+                    String str = res.getResult().getOutput().getContent();
+                    usage.addAndGet(res.getMetadata().getUsage().getPromptTokens());
+                    text.append(str);
+                    req.getEmitter().send(new ChatRes(str));
+                },
+                throwable -> {
+                    System.err.println("Error: " + throwable.getMessage());
+                    emitter.send("Error: " + throwable.getMessage());
+                    emitter.complete();
+                    throw new ServiceException(throwable.getMessage());
+                },
+                () -> {
+                    // save message
+                    if (req.getConversationId() != null) {
+                        req.setMessage(text.toString());
+                        LcMessage message = new LcMessage();
+                        BeanUtils.copyProperties(req, message);
+                        message.setRole(RoleEnum.ASSISTANT.getName());
+                        messageService.addMessage(message);
+                    }
+
+                    emitter.send(new ChatRes(usage.get(), startTime));
+                    emitter.complete();
+                }
+        );
     }
 
     @Override
-    public void stream(TextR req, PromptConst promptConst) {
-        PromptTemplate promptTemplate = PromptTemplate.from(PromptStore.get(promptConst));
-        Prompt prompt = promptTemplate.apply(BeanUtil.beanToMap(req, false, true));
-        langChatService.stream(new ChatReq(prompt, req.getEmitter()));
+    public void stream(TextR req) {
+//        langChatService.stream(req);
     }
 
     @Override
-    public String text(TextR req, PromptConst promptConst) {
-        PromptTemplate promptTemplate = PromptTemplate.from(PromptStore.get(promptConst));
-        Prompt prompt = promptTemplate.apply(BeanUtil.beanToMap(req, false, true));
-        return langChatService.text(new ChatReq(prompt));
+    public String text(TextR req) {
+        return langChatService.text(req);
     }
 
     @Override
     public LcOss image(ImageR req) {
-        PromptTemplate promptTemplate = PromptTemplate.from(PromptStore.get(PromptConst.IMAGE));
-        Prompt prompt = promptTemplate.apply(BeanUtil.beanToMap(req, false, true));
-        OssR ossR = langChatService.image(new ChatReq(prompt));
+        OssR ossR = langChatService.image(req);
 
         LcOss oss = new LcOss();
         BeanUtils.copyProperties(ossR, oss);

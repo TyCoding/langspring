@@ -1,13 +1,14 @@
 package cn.tycoding.langchat.server.controller;
 
-import cn.tycoding.langchat.common.constant.PromptConst;
-import cn.tycoding.langchat.core.utils.ChatRes;
+import cn.tycoding.langchat.core.dto.ChatReq;
+import cn.tycoding.langchat.core.dto.ChatRes;
+import cn.tycoding.langchat.core.dto.ImageR;
+import cn.tycoding.langchat.core.dto.TextR;
+import cn.tycoding.langchat.core.enums.PromptConst;
+import cn.tycoding.langchat.core.utils.PromptUtil;
 import cn.tycoding.langchat.core.utils.StreamEmitter;
 import cn.tycoding.langchat.server.service.ChatService;
-import cn.tycoding.langchat.server.utils.ChatR;
-import cn.tycoding.langchat.server.utils.ImageR;
 import cn.tycoding.langchat.server.utils.R;
-import cn.tycoding.langchat.server.utils.TextR;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,9 +28,10 @@ public class ChatController {
     private final ChatService chatService;
 
     @PostMapping
-    public SseEmitter chat(@RequestBody ChatR req) {
+    public SseEmitter chat(@RequestBody ChatReq req) {
         StreamEmitter emitter = new StreamEmitter();
         req.setEmitter(emitter);
+        req.setPrompt(PromptUtil.build(req.getMessage()));
         chatService.chat(req);
         return emitter.get();
     }
@@ -38,7 +40,8 @@ public class ChatController {
     public SseEmitter translate(@RequestBody TextR req) {
         StreamEmitter emitter = new StreamEmitter();
         req.setEmitter(emitter);
-        chatService.stream(req, PromptConst.TRANSLATE);
+        req.setPrompt(PromptUtil.build(req.getMessage(), PromptConst.TRANSLATE));
+        chatService.stream(req);
         return emitter.get();
     }
 
@@ -46,18 +49,21 @@ public class ChatController {
     public SseEmitter write(@RequestBody TextR req) {
         StreamEmitter emitter = new StreamEmitter();
         req.setEmitter(emitter);
-        chatService.stream(req, PromptConst.WRITE);
+        req.setPrompt(PromptUtil.build(req.getMessage(), PromptConst.CHART_LINE));
+        chatService.stream(req);
         return emitter.get();
     }
 
     @PostMapping("/mindmap")
     public R mindmap(@RequestBody TextR req) {
-        return R.ok(new ChatRes(chatService.text(req, PromptConst.MIND_MAP)));
+        req.setPrompt(PromptUtil.build(req.getMessage(), PromptConst.MINDMAP));
+        return R.ok(new ChatRes(chatService.text(req)));
     }
 
     @PostMapping("/chart")
     public R chart(@RequestBody TextR req) {
-        return R.ok(new ChatRes(chatService.text(req, PromptConst.LINE_CHART)));
+        req.setPrompt(PromptUtil.build(req.getMessage(), PromptConst.CHART_LINE));
+        return R.ok(new ChatRes(chatService.text(req)));
     }
 
     @PostMapping("/image")

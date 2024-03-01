@@ -1,8 +1,9 @@
-package cn.tycoding.langchat.core.utils;
+package cn.tycoding.langchat.core.dto;
 
-import dev.langchain4j.model.input.Prompt;
+import cn.tycoding.langchat.core.utils.StreamEmitter;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.springframework.ai.chat.prompt.Prompt;
 
 /**
  * @author tycoding
@@ -12,9 +13,13 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class ChatReq {
 
-    private String content;
+    private String message;
 
-    private String promptText;
+    private String conversationId;
+
+    private String chatId;
+
+    private String promptId;
 
     private Prompt prompt;
 
@@ -36,14 +41,8 @@ public class ChatReq {
         this.emitter = emitter;
     }
 
-    public ChatReq(String content, StreamEmitter emitter) {
-        this.content = content;
-        this.emitter = emitter;
-    }
-
-    public ChatReq(String content, String promptText, StreamEmitter emitter) {
-        this.content = content;
-        this.promptText = promptText;
+    public ChatReq(String message, StreamEmitter emitter) {
+        this.message = message;
         this.emitter = emitter;
     }
 }

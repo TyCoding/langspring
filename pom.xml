@@ -21,13 +21,14 @@
         <revision>1.0</revision>
 
         <hutool.version>5.8.23</hutool.version>
-        <mybatis-plus.version>3.5.4.1</mybatis-plus.version>
+        <mybatis-plus.version>3.5.5</mybatis-plus.version>
         <druid.version>1.2.18</druid.version>
         <mysql-connector.version>8.0.33</mysql-connector.version>
         <fastjson.version>2.0.38</fastjson.version>
         <snakeyaml.version>2.1</snakeyaml.version>
         <langchain4j.version>0.26.1</langchain4j.version>
         <sa-token.version>1.37.0</sa-token.version>
+        <spring-ai.version>0.8.0</spring-ai.version>
     </properties>
 
     <modules>

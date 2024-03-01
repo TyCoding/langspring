@@ -36,11 +36,11 @@ export interface ChatR {
   chatId?: string;
   parentChatId?: string;
   conversationId?: string;
-  content?: string;
+  message?: string;
   promptId?: string;
   role?: 'user' | 'assistant' | 'system';
   createTime?: string;
-  // type?: string;
+  type?: string;
   // language?: string;
   // tone?: string;
   // length?: string;
@@ -60,7 +60,7 @@ export interface Oss {
 }
 
 export interface ImageR {
-  content?: string;
+  message?: string;
   model?: string;
   quality?: string;
   size?: string;

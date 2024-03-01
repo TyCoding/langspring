@@ -1,12 +1,11 @@
 package cn.tycoding.langchat.server.controller;
 
-import cn.tycoding.langchat.common.constant.PromptConst;
+import cn.tycoding.langchat.core.dto.TextR;
 import cn.tycoding.langchat.core.utils.StreamEmitter;
 import cn.tycoding.langchat.server.entity.LcOss;
 import cn.tycoding.langchat.server.service.ClientFileService;
 import cn.tycoding.langchat.server.service.OssService;
 import cn.tycoding.langchat.server.utils.R;
-import cn.tycoding.langchat.server.utils.TextR;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -47,7 +46,7 @@ public class OssFileController {
     public SseEmitter chat(@RequestBody TextR req) {
         StreamEmitter emitter = new StreamEmitter();
         req.setEmitter(emitter);
-        clientFileService.chat(req, PromptConst.DOCUMENT);
+        clientFileService.chat(req);
         return emitter.get();
     }
 

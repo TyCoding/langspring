@@ -1,16 +1,15 @@
 package cn.tycoding.langchat.server.utils;
 
 import cn.hutool.core.util.URLUtil;
-import cn.hutool.extra.servlet.ServletUtil;
 import cn.hutool.http.HttpUtil;
 import cn.tycoding.langchat.common.component.SpringContextHolder;
 import cn.tycoding.langchat.common.event.LogEvent;
 import cn.tycoding.langchat.server.entity.LcLog;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.SneakyThrows;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.Objects;
 
@@ -51,7 +50,7 @@ public class LogUtil {
                 .setUsername(AuthUtil.getUsername())
                 .setOperation(operation)
                 .setCreateTime(new Date())
-                .setIp(ServletUtil.getClientIP(request))
+//                .setIp(ServletUtil.getClientIP(request))
                 .setUrl(URLUtil.getPath(request.getRequestURI()))
                 .setMethod(method)
                 .setParams(HttpUtil.toParams(request.getParameterMap()))

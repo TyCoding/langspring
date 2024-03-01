@@ -1,6 +1,6 @@
 package cn.tycoding.langchat.server.entity;
 
-import cn.tycoding.langchat.core.utils.OssR;
+import cn.tycoding.langchat.core.dto.OssR;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;

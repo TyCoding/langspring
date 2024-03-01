@@ -1,4 +1,4 @@
-package cn.tycoding.langchat.core.utils;
+package cn.tycoding.langchat.core.enums;
 
 import lombok.Getter;
 

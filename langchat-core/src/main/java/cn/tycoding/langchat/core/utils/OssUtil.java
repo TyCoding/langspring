@@ -5,6 +5,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.URLUtil;
+import cn.tycoding.langchat.core.dto.OssR;
 import cn.tycoding.langchat.core.properties.OssProps;
 import lombok.SneakyThrows;
 import org.springframework.web.multipart.MultipartFile;

@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia';
 import {
-  list as getConversations,
   add as addConversations,
-  update as updateConversations,
   del as delConversations,
   getMessages,
+  list as getConversations,
+  update as updateConversations,
 } from '@/api/conversation';
 import { ChatState } from './chat';
 import { formatToDateTime } from '@/utils/dateUtil';
@@ -77,13 +77,15 @@ export const useChatStore = defineStore('chat-store', {
       if (params.id == undefined) {
         return;
       }
+      if (this.active !== '') {
+        this.messages = await getMessages(params.id);
+      }
       await this.setActive(params.id);
       await this.setEdit('');
       this.curConversation = params;
-      this.messages = await getMessages(params.id);
 
       // replace url path
-      let query: any = { conversationId: params.id };
+      const query: any = { conversationId: params.id };
       if (params.promptId !== null) {
         query.promptId = params.promptId;
       }
@@ -124,7 +126,7 @@ export const useChatStore = defineStore('chat-store', {
         chatId,
         conversationId: this.curConversation?.id,
         role: role,
-        content: message,
+        message,
         createTime: formatToDateTime(new Date()),
       };
       this.messages.push(data);
@@ -134,10 +136,10 @@ export const useChatStore = defineStore('chat-store', {
     /**
      * 更新消息
      */
-    async updateMessage(chatId: string | undefined, content: string, isError?: boolean) {
+    async updateMessage(chatId: string | undefined, message: string, isError?: boolean) {
       const index = this.messages.findIndex((item) => item?.chatId == chatId);
       if (index !== -1) {
-        this.messages[index].content = content;
+        this.messages[index].message = message;
         this.messages[index].isError = isError;
       }
     },
