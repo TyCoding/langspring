@@ -4,6 +4,8 @@
 
 [http://langchat.cn](http://langchat.cn)
 
+[English](./README.md)
+
 ## 特性
 
 1. 依赖SpringFramework最新发布的Spring AI

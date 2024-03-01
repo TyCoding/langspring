@@ -4,6 +4,8 @@
 
 [http://langchat.cn](http://langchat.cn)
 
+[中文](./README_zh.md)
+
 ## Features
 
 1. Dependency on the latest release of Spring AI from SpringFramework.
