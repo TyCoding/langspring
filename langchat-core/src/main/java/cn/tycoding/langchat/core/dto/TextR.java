@@ -14,6 +14,8 @@ public class TextR {
     private StreamEmitter emitter;
     private Prompt prompt;
 
+    private String model;
+
     /**
      * 输入内容
      */

@@ -32,3 +32,9 @@ mybatis-plus:
 
 sa-token:
   is-print: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh

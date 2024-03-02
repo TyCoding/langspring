@@ -15,7 +15,7 @@ import { toRaw } from 'vue';
 export const useChatStore = defineStore('chat-store', {
   state: (): ChatState =>
     <ChatState>{
-      model: 'gpt-3.5',
+      model: '',
       active: '',
       isEdit: '',
       siderCollapsed: true,
@@ -52,6 +52,7 @@ export const useChatStore = defineStore('chat-store', {
         }
         if (data && data.length > 0) {
           this.conversations = data;
+          this.curConversation = data[0];
         } else {
           this.active = '';
           this.conversations = [];
@@ -84,10 +85,18 @@ export const useChatStore = defineStore('chat-store', {
       await this.setEdit('');
       this.curConversation = params;
 
+      await this.replaceUrl();
+    },
+
+    async replaceUrl() {
+      if (this.curConversation == undefined) {
+        return;
+      }
+      const { id, promptId } = this.curConversation;
       // replace url path
-      const query: any = { conversationId: params.id };
-      if (params.promptId !== null) {
-        query.promptId = params.promptId;
+      const query: any = { conversationId: id };
+      if (promptId) {
+        query.promptId = promptId;
       }
       await router.replace({ path: router.currentRoute.value.path, query });
     },
@@ -127,6 +136,7 @@ export const useChatStore = defineStore('chat-store', {
         conversationId: this.curConversation?.id,
         role: role,
         message,
+        model: this.model,
         createTime: formatToDateTime(new Date()),
       };
       this.messages.push(data);

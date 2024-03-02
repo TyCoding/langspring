@@ -1,16 +1,16 @@
 package cn.tycoding.langchat.server.service.impl;
 
+import cn.tycoding.langchat.biz.entity.LcMessage;
+import cn.tycoding.langchat.biz.entity.LcOss;
+import cn.tycoding.langchat.biz.mapper.OssMapper;
+import cn.tycoding.langchat.biz.service.MessageService;
 import cn.tycoding.langchat.common.constant.RoleEnum;
+import cn.tycoding.langchat.common.exception.ServiceException;
 import cn.tycoding.langchat.core.dto.*;
 import cn.tycoding.langchat.core.enums.FileEnum;
 import cn.tycoding.langchat.core.service.LangChatService;
 import cn.tycoding.langchat.core.utils.StreamEmitter;
-import cn.tycoding.langchat.server.entity.LcMessage;
-import cn.tycoding.langchat.server.entity.LcOss;
-import cn.tycoding.langchat.server.exception.ServiceException;
-import cn.tycoding.langchat.server.mapper.OssMapper;
 import cn.tycoding.langchat.server.service.ChatService;
-import cn.tycoding.langchat.server.service.MessageService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.ChatResponse;
@@ -51,11 +51,11 @@ public class ChatServiceImpl implements ChatService {
                     text.append(str);
                     req.getEmitter().send(new ChatRes(str));
                 },
-                throwable -> {
-                    System.err.println("Error: " + throwable.getMessage());
-                    emitter.send("Error: " + throwable.getMessage());
+                err -> {
+                    System.err.println("Error: " + err.getMessage());
+                    emitter.send("Error: " + err.getMessage());
                     emitter.complete();
-                    throw new ServiceException(throwable.getMessage());
+                    throw new ServiceException(err.getMessage());
                 },
                 () -> {
                     // save message

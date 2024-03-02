@@ -41,9 +41,10 @@ export interface ChatR {
   role?: 'user' | 'assistant' | 'system';
   createTime?: string;
   type?: string;
-  // language?: string;
-  // tone?: string;
-  // length?: string;
+  model?: string;
+  language?: string;
+  tone?: string;
+  length?: string;
 }
 
 export interface Oss {

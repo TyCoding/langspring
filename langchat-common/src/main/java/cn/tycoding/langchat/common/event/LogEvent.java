@@ -1,7 +1,6 @@
 package cn.tycoding.langchat.common.event;
 
 import org.springframework.context.ApplicationEvent;
-
 /**
  * @author tycoding
  * @since 2024/1/19

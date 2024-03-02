@@ -10,7 +10,7 @@ public enum ModelNameEnum {
     GPT3("gpt-3.5-turbo"),
     ;
 
-    private String name;
+    private final String name;
 
     ModelNameEnum(String name) {
         this.name = name;

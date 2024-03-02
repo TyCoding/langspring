@@ -13,6 +13,8 @@ import org.springframework.ai.chat.prompt.Prompt;
 @Accessors(chain = true)
 public class ChatReq {
 
+    private String model;
+
     private String message;
 
     private String conversationId;

@@ -34,6 +34,9 @@
     scrollToBottom();
     return chatStore.messages;
   });
+  onUpdated(() => {
+    chatStore.replaceUrl();
+  });
 
   async function handleSubmit() {
     let message = prompt.value;
@@ -73,6 +76,7 @@
             chatId: chatId.value,
             message,
             role: 'user',
+            model: chatStore.model,
             conversationId: conversationId,
           },
           async ({ event }) => {
